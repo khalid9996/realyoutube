@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import SideBar from "./SideBar";
+import Videos from "./Videos";
+import { fetchFromAPI } from "../utils/fetchFromAPI";
 
 const Feed = () => {
+  const [selectedCategory, setSelectedCategory] = useState("New");
+  const [videos, setVideos] = useState(null);
+
+  useEffect(() => {
+    setVideos(null);
+
+    fetchFromAPI(`search?part=snippet&q=${selectedCategory}`).then((data) =>
+      setVideos(data.items)
+    );
+  }, [selectedCategory]);
+  console.log(videos);
+
   return (
     <Stack sx={{ flexDirection: { sx: "column", md: "row" } }}>
       <Box
@@ -12,14 +26,30 @@ const Feed = () => {
           px: { sx: 0, md: 2 },
         }}
       >
-        <SideBar />
+        <SideBar
+          selectedCategory={selectedCategory}
+          setselectedCategory={setSelectedCategory}
+        />
         <Typography
           className="copyright"
           varient="body2"
           sx={{ mt: 1.5, color: "#fff" }}
         >
-          Coperight 2023 KHALID
+          Copyright 2023 KHALID
         </Typography>
+      </Box>
+
+      <Box p={2} sx={{ overflowY: "auto", heigh: "90vh", flex: 2 }}>
+        <Typography
+          varient="h4"
+          fontWeight="bold"
+          mb={2}
+          sx={{ color: "white" }}
+        >
+          {`${selectedCategory} `}
+          <span style={{ color: "#F31503" }}>videos</span>
+        </Typography>
+        <Videos videos={videos} />
       </Box>
     </Stack>
   );
